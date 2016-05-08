@@ -7,6 +7,8 @@ class News extends CI_Controller {
                 parent::__construct();
                 $this->load->model('news_model');
                 $this->load->helper('url_helper');
+                //global banner for all metho
+                $this->config->set_item('banner','Global News Banner');
         }
 
         public function index()
@@ -32,9 +34,9 @@ class News extends CI_Controller {
 
                 $data['title'] = $data['news_item']['title'];
 
-                $this->load->view('templates/header', $data);
+                //$this->load->view('templates/header', $data);
                 $this->load->view('news/view', $data);
-                $this->load->view('templates/footer');
+                //$this->load->view('templates/footer');
         }
     
 
@@ -51,30 +53,26 @@ class News extends CI_Controller {
 
                 if ($this->form_validation->run() === FALSE)
                 {//no data, show form
-                    $this->load->view('templates/header', $data);
+                   // $this->load->view('templates/header', $data);
                     $this->load->view('news/create', $data);
-                    $this->load->view('templates/footer', $data);
+                    //$this->load->view('templates/footer', $data);
 
                 }
                 else
                 {//data, so enter add it!
                     $slug = $this->news_model->set_news();
-                    $data['news_item'] = $this->news_model->get_news($slug);
-                    $data['page_id'] = "News";
-
-                    if (empty($data['news_item']))
-                    {
-                            show_404();
+                    
+                    if($slug)
+                    {//data present, load view
+                        feedback('News item succesfully created!','notice');
+                        redirect('/news/view/' . $slug);
+                        
+                    }else{//we have an issue!
+                       
+                        feedback('News item NOT created!','warning');
+                        redirect('/news/create');
                     }
-
-                    $data['title'] = $data['news_item']['title'];
-
-                    $this->load->view('templates/header', $data);
-                    $this->load->view('news/view', $data);
-                    $this->load->view('templates/footer');
-                    
-                    
-                    
+             
                 }
         }
     
